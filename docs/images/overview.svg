@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400" role="img" aria-label="从提问到离线研报的六步流程">
+  <rect width="1200" height="400" fill="#f5f8fb"/>
+  <rect x="0" y="0" width="1200" height="6" fill="#155c85"/>
+  <text x="36" y="46" font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="26" font-weight="700" fill="#162b3d">从一句话，到一份能离线打开的研报</text>
+  <text x="36" y="72" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#5b6b7c">From one question to a self-contained offline HTML report · 六步，全部可复核</text>
+
+  <g font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <!-- step 1 -->
+    <rect x="28" y="100" width="176" height="176" rx="12" fill="#ffffff" stroke="#d7e2ec"/>
+    <circle cx="56" cy="128" r="15" fill="#155c85"/>
+    <text x="56" y="133" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">1</text>
+    <text x="46" y="166" font-size="16" font-weight="700" fill="#162b3d">定标的与财年</text>
+    <text x="46" y="189" font-size="11" fill="#5b6b7c">Scope &amp; fiscal year</text>
+    <text x="46" y="218" font-size="12" fill="#405568">确认代码、上市地、</text>
+    <text x="46" y="237" font-size="12" fill="#405568">报告期与股本结构</text>
+    <text x="46" y="262" font-size="11" fill="#7b8998">Identity first</text>
+
+    <!-- step 2 -->
+    <rect x="224" y="100" width="176" height="176" rx="12" fill="#ffffff" stroke="#d7e2ec"/>
+    <circle cx="252" cy="128" r="15" fill="#155c85"/>
+    <text x="252" y="133" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">2</text>
+    <text x="242" y="166" font-size="16" font-weight="700" fill="#162b3d">读财报原文</text>
+    <text x="242" y="189" font-size="11" fill="#5b6b7c">Read primary filings</text>
+    <text x="242" y="218" font-size="12" fill="#405568">五年年报 + 当年</text>
+    <text x="242" y="237" font-size="12" fill="#405568">全部已披露中期</text>
+    <text x="242" y="262" font-size="11" fill="#7b8998">Not summaries</text>
+
+    <!-- step 3 -->
+    <rect x="420" y="100" width="176" height="176" rx="12" fill="#ffffff" stroke="#d7e2ec"/>
+    <circle cx="448" cy="128" r="15" fill="#155c85"/>
+    <text x="448" y="133" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">3</text>
+    <text x="438" y="166" font-size="16" font-weight="700" fill="#162b3d">建证据账本</text>
+    <text x="438" y="189" font-size="11" fill="#5b6b7c">Evidence ledger</text>
+    <text x="438" y="218" font-size="12" fill="#405568">每个数字都带来源、</text>
+    <text x="438" y="237" font-size="12" fill="#405568">期间、单位与定位</text>
+    <text x="438" y="262" font-size="11" fill="#7b8998">No invention</text>
+
+    <!-- step 4 -->
+    <rect x="616" y="100" width="176" height="176" rx="12" fill="#ffffff" stroke="#d7e2ec"/>
+    <circle cx="644" cy="128" r="15" fill="#155c85"/>
+    <text x="644" y="133" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">4</text>
+    <text x="634" y="166" font-size="16" font-weight="700" fill="#162b3d">适配数据源</text>
+    <text x="634" y="189" font-size="11" fill="#5b6b7c">Discover data tools</text>
+    <text x="634" y="218" font-size="12" fill="#405568">只用已连接的工具；</text>
+    <text x="634" y="237" font-size="12" fill="#405568">没有就走公开网页</text>
+    <text x="634" y="262" font-size="11" fill="#7b8998">Vendor-agnostic</text>
+
+    <!-- step 5 -->
+    <rect x="812" y="100" width="176" height="176" rx="12" fill="#ffffff" stroke="#d7e2ec"/>
+    <circle cx="840" cy="128" r="15" fill="#155c85"/>
+    <text x="840" y="133" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">5</text>
+    <text x="830" y="166" font-size="16" font-weight="700" fill="#162b3d">统一口径计算</text>
+    <text x="830" y="189" font-size="11" fill="#5b6b7c">Normalize &amp; compute</text>
+    <text x="830" y="218" font-size="12" fill="#405568">币种、单季、TTM、</text>
+    <text x="830" y="237" font-size="12" fill="#405568">分市场同权定价</text>
+    <text x="830" y="262" font-size="11" fill="#7b8998">Same denominator</text>
+
+    <!-- step 6 -->
+    <rect x="1008" y="100" width="164" height="176" rx="12" fill="#eef5fa" stroke="#b9d3e6"/>
+    <circle cx="1036" cy="128" r="15" fill="#b82935"/>
+    <text x="1036" y="133" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">6</text>
+    <text x="1026" y="166" font-size="16" font-weight="700" fill="#162b3d">离线 HTML</text>
+    <text x="1026" y="189" font-size="11" fill="#5b6b7c">Offline HTML + check</text>
+    <text x="1026" y="218" font-size="12" fill="#405568">内联图表、五大模块、</text>
+    <text x="1026" y="237" font-size="12" fill="#405568">一轮质检 + 人工核对</text>
+    <text x="1026" y="262" font-size="11" fill="#7b8998">No CDN needed</text>
+
+    <!-- arrows -->
+    <g fill="#155c85" font-size="20" font-weight="700">
+      <text x="207" y="196">›</text><text x="403" y="196">›</text><text x="599" y="196">›</text>
+      <text x="795" y="196">›</text><text x="991" y="196">›</text>
+    </g>
+  </g>
+
+  <g font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <text x="36" y="316" font-size="14" font-weight="700" fill="#162b3d">三条不可绕过的规矩 · Three non-negotiables</text>
+    <rect x="36" y="328" width="356" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="52" y="353" font-size="13" fill="#162b3d">① 原文优先　Primary filings first</text>
+    <rect x="404" y="328" width="356" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="420" y="353" font-size="13" fill="#162b3d">② 全期覆盖　All current-year interims</text>
+    <rect x="772" y="328" width="400" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="788" y="353" font-size="13" fill="#162b3d">③ 逐数可溯　Every number traceable</text>
+    <text x="36" y="390" font-size="11" fill="#7b8998">示意图 · Schematic illustration · 仅供理解流程，不含真实行情或财务数据 · Not investment advice</text>
+  </g>
+</svg>

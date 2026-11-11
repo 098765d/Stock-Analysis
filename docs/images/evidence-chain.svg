@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" width="1200" height="470" role="img" aria-label="每个数字的证据链与常见错误对照">
+  <rect width="1200" height="470" fill="#f5f8fb"/>
+  <rect x="0" y="0" width="1200" height="6" fill="#16805a"/>
+  <g font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <text x="36" y="46" font-size="25" font-weight="700" fill="#162b3d">一个数字，必须带四样东西</text>
+    <text x="36" y="72" font-size="14" fill="#5b6b7c">What every number must carry · 查不到就写「暂无」，绝不猜 · Missing is never zero</text>
+
+    <!-- chain cards -->
+    <rect x="36" y="96" width="196" height="104" rx="10" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="54" y="122" font-size="12" fill="#7b8998">数值 VALUE</text>
+    <text x="54" y="150" font-size="19" font-weight="700" fill="#162b3d">1,234.56 亿元</text>
+    <text x="54" y="176" font-size="11" fill="#7b8998">示意数值 / sample</text>
+
+    <rect x="256" y="96" width="216" height="104" rx="10" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="274" y="122" font-size="12" fill="#7b8998">来源 SOURCE</text>
+    <text x="274" y="149" font-size="14" font-weight="600" fill="#162b3d">2026 年第三季度报告</text>
+    <text x="274" y="173" font-size="12" fill="#405568">巨潮资讯 · 合并利润表 · 第 3 页</text>
+
+    <rect x="496" y="96" width="196" height="104" rx="10" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="514" y="122" font-size="12" fill="#7b8998">期间 PERIOD</text>
+    <text x="514" y="150" font-size="14" font-weight="600" fill="#162b3d">2026-01-01 → 09-30</text>
+    <text x="514" y="174" font-size="12" fill="#405568">累计口径 / year-to-date</text>
+
+    <rect x="716" y="96" width="196" height="104" rx="10" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="734" y="122" font-size="12" fill="#7b8998">口径 DEFINITION</text>
+    <text x="734" y="150" font-size="14" font-weight="600" fill="#162b3d">CNY · 合并 · 总额法</text>
+    <text x="734" y="174" font-size="12" fill="#405568">与上年同期同区间比较</text>
+
+    <rect x="936" y="96" width="228" height="104" rx="10" fill="#eef8f2" stroke="#b8ddc9"/>
+    <text x="954" y="122" font-size="12" fill="#16805a">状态 STATUS</text>
+    <text x="954" y="152" font-size="20" font-weight="700" fill="#16805a">ok · 已核对</text>
+    <text x="954" y="176" font-size="11" fill="#405568">原文已打开并阅读</text>
+
+    <g fill="#16805a" font-size="22" font-weight="700">
+      <text x="236" y="156">›</text><text x="476" y="156">›</text><text x="696" y="156">›</text><text x="916" y="156">›</text>
+    </g>
+
+    <!-- status chips -->
+    <text x="36" y="238" font-size="14" font-weight="700" fill="#162b3d">拿不到时的五种写法 · Five honest states instead of a guessed number</text>
+    <g font-size="12">
+      <rect x="36" y="250" width="212" height="34" rx="17" fill="#eef8f2" stroke="#b8ddc9"/>
+      <text x="54" y="272" fill="#16805a">ok　已取得</text>
+      <rect x="256" y="250" width="212" height="34" rx="17" fill="#fff7ea" stroke="#eed3a8"/>
+      <text x="274" y="272" fill="#8a5f21">not_disclosed　未披露</text>
+      <rect x="476" y="250" width="212" height="34" rx="17" fill="#fff7ea" stroke="#eed3a8"/>
+      <text x="494" y="272" fill="#8a5f21">unavailable　未取到</text>
+      <rect x="696" y="250" width="212" height="34" rx="17" fill="#f2f5f8" stroke="#d7e2ec"/>
+      <text x="714" y="272" fill="#5b6b7c">not_applicable　不适用</text>
+      <rect x="916" y="250" width="248" height="34" rx="17" fill="#f2f5f8" stroke="#d7e2ec"/>
+      <text x="934" y="272" fill="#5b6b7c">not_calculable　不宜计算</text>
+    </g>
+
+    <!-- do / don't -->
+    <text x="36" y="322" font-size="14" font-weight="700" fill="#162b3d">四个最容易把结论带偏的坑 · Four common traps</text>
+    <rect x="36" y="334" width="552" height="112" rx="10" fill="#fff5f4" stroke="#f0cdc9"/>
+    <text x="54" y="358" font-size="13" font-weight="700" fill="#b82935">常见做法 · Common shortcut</text>
+    <text x="54" y="381" font-size="12" fill="#5b4a49">凭记忆填数 · 只用最新一份年报 · A 股市值 + H 股市值</text>
+    <text x="54" y="402" font-size="12" fill="#5b4a49">图表依赖 CDN，断网就空白 · 合同负债当成全部订单</text>
+    <text x="54" y="427" font-size="11" fill="#8a7b7a">Guess · annual only · sum market caps · CDN charts</text>
+
+    <rect x="612" y="334" width="552" height="112" rx="10" fill="#f1f9f5" stroke="#c3e2d1"/>
+    <text x="630" y="358" font-size="13" font-weight="700" fill="#16805a">本技能的做法 · This skill</text>
+    <text x="630" y="381" font-size="12" fill="#3f5b4c">查不到就写「暂无」并说明已查范围 · 五年年报 + 当年每份中期</text>
+    <text x="630" y="402" font-size="12" fill="#3f5b4c">分市场同权每基础股价格比较 · 内联 SVG，断网可看</text>
+    <text x="630" y="427" font-size="11" fill="#5b7a68">State the gap · all interims · per-share parity · offline SVG</text>
+  </g>
+</svg>
