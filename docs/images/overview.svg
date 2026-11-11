@@ -39,11 +39,11 @@
     <rect x="616" y="100" width="176" height="176" rx="12" fill="#ffffff" stroke="#d7e2ec"/>
     <circle cx="644" cy="128" r="15" fill="#155c85"/>
     <text x="644" y="133" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">4</text>
-    <text x="634" y="166" font-size="16" font-weight="700" fill="#162b3d">适配数据源</text>
-    <text x="634" y="189" font-size="11" fill="#5b6b7c">Discover data tools</text>
-    <text x="634" y="218" font-size="12" fill="#405568">只用已连接的工具；</text>
-    <text x="634" y="237" font-size="12" fill="#405568">没有就走公开网页</text>
-    <text x="634" y="262" font-size="11" fill="#7b8998">Vendor-agnostic</text>
+    <text x="634" y="166" font-size="16" font-weight="700" fill="#162b3d">取数并降级</text>
+    <text x="634" y="189" font-size="11" fill="#5b6b7c">Fetch, then fall back</text>
+    <text x="634" y="218" font-size="12" fill="#405568">连接器缺就降免费源，</text>
+    <text x="634" y="237" font-size="12" fill="#405568">再缺读原文，全程留痕</text>
+    <text x="634" y="262" font-size="11" fill="#7b8998">Never stop · never zero</text>
 
     <!-- step 5 -->
     <rect x="812" y="100" width="176" height="176" rx="12" fill="#ffffff" stroke="#d7e2ec"/>
@@ -73,15 +73,17 @@
   </g>
 
   <g font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
-    <text x="36" y="316" font-size="14" font-weight="700" fill="#162b3d">四条不可绕过的规矩 · Four non-negotiables</text>
-    <rect x="36" y="328" width="276" height="40" rx="7" fill="#eef8f2" stroke="#b8ddc9"/>
-    <text x="50" y="353" font-size="12" fill="#16805a">① 接口优先 + 锚定核对 API first</text>
-    <rect x="324" y="328" width="276" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
-    <text x="338" y="353" font-size="12" fill="#162b3d">② 全期覆盖 All periods</text>
-    <rect x="612" y="328" width="276" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
-    <text x="626" y="353" font-size="12" fill="#162b3d">③ 逐数可溯 Traceable</text>
-    <rect x="900" y="328" width="264" height="40" rx="7" fill="#eef5fa" stroke="#b9d3e6"/>
-    <text x="914" y="353" font-size="12" fill="#155c85">④ 同行对照 Peer layer</text>
+    <text x="36" y="316" font-size="14" font-weight="700" fill="#162b3d">五条不可绕过的规矩 · Five non-negotiables</text>
+    <rect x="36" y="328" width="216" height="40" rx="7" fill="#eef8f2" stroke="#b8ddc9"/>
+    <text x="50" y="353" font-size="11" fill="#16805a">① 接口优先 + 锚定核对</text>
+    <rect x="264" y="328" width="216" height="40" rx="7" fill="#eef8f2" stroke="#b8ddc9"/>
+    <text x="278" y="353" font-size="11" fill="#16805a">② 取不到就降级，不许停</text>
+    <rect x="492" y="328" width="216" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="506" y="353" font-size="11" fill="#162b3d">③ 全期覆盖 All periods</text>
+    <rect x="720" y="328" width="216" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="734" y="353" font-size="11" fill="#162b3d">④ 逐数可溯 Traceable</text>
+    <rect x="948" y="328" width="216" height="40" rx="7" fill="#eef5fa" stroke="#b9d3e6"/>
+    <text x="962" y="353" font-size="11" fill="#155c85">⑤ 同行对照 Peer layer</text>
     <text x="36" y="390" font-size="11" fill="#7b8998">示意图 · Schematic illustration · 仅供理解流程，不含真实行情或财务数据 · Not investment advice</text>
   </g>
 </svg>

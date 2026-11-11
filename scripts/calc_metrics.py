@@ -17,7 +17,7 @@ TEMPLATE = {
     'entity': {'name': None, 'primary_code': None, 'target_fiscal_year': None,
                'fiscal_year_start': None, 'total_shares': None},
     'coverage': {'evidence_mode': 'api_first',
-                 'source_strategy': {'api_fields': [], 'document_fields': [], 'anchor_check': None},
+                 'source_strategy': {'api_fields': [], 'document_fields': [], 'anchor_check': None, 'fallbacks': []},
                  'annual_periods': [], 'interim_report_ids': [], 'peer_comparison_sections': [],
                  'searched_at': None, 'searched_channels': [], 'no_interims_reason': None},
     'sources': [], 'connector_inventory': [], 'records': [], 'financials': {},

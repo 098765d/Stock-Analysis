@@ -56,6 +56,7 @@ def fixture_strategy(anchor_source_id="annual_2025"):
             "performed": True, "source_ids": [anchor_source_id], "fields_verified": 5,
             "result": "test_fixture 合成核对：接口与原表五个核心科目一致", "mismatches": [],
         },
+        "fallbacks": [],
     }
 
 
@@ -291,6 +292,33 @@ class EvidenceAuditTests(unittest.TestCase):
     def test_api_first_requires_api_fields(self):
         self.data["coverage"]["source_strategy"]["api_fields"] = []
         self.assert_invalid("api_fields")
+
+    def test_fallback_record_accepted_and_warned(self):
+        self.data["coverage"]["source_strategy"]["fallbacks"] = [{
+            "field": "五年行情与总量财务", "primary_connector": "quote_connector",
+            "fallback_source": "免费公开接口 Yahoo Finance chart", "reason": "not_authorized",
+            "impact": "分部与合同负债另读原文，估值倍数不受影响",
+        }]
+        result = audit(self.data, allow_test=True)
+        self.assertTrue(result["ok"], result)
+        self.assertTrue(any("1 处连接器降级" in item for item in result["warnings"]))
+
+    def test_fallback_requires_fields(self):
+        for key in ("field", "primary_connector", "fallback_source", "impact"):
+            with self.subTest(key=key):
+                self.data["coverage"]["source_strategy"]["fallbacks"] = [{
+                    "field": "行情", "primary_connector": "c", "fallback_source": "Yahoo Finance",
+                    "reason": "no_field", "impact": "无",
+                }]
+                del self.data["coverage"]["source_strategy"]["fallbacks"][0][key]
+                self.assert_invalid(key)
+
+    def test_fallback_reason_must_be_enumerated(self):
+        self.data["coverage"]["source_strategy"]["fallbacks"] = [{
+            "field": "行情", "primary_connector": "c", "fallback_source": "Yahoo Finance",
+            "reason": "随便写的", "impact": "无",
+        }]
+        self.assert_invalid("降级原因须为")
 
     def test_document_first_mode_keeps_statutory_requirement(self):
         self.data["coverage"]["evidence_mode"] = "document_first"

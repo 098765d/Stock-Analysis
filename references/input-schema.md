@@ -21,6 +21,7 @@ v2裸数和latest_quarter旧结构不兼容，不能把旧数据无证据搬过�
 - `api_fields`：由结构化接口/公示取得的字段清单，如「五年营收/成本/营业利润/归母/扣非/OCF/资产/存货/应收/应付/合同负债」「各地收盘价与汇率」「PE/PB/PS」「一致预期」。
 - `document_fields`：因接口无字段或需附注语境而必须读原文的字段清单；确无则给空数组但须在 `anchor_check.result` 说明。
 - `anchor_check`：`performed:true`、`source_ids`(须含 statutory_report)、`fields_verified`(实际比对字段数，≥1)、`result`(核对结论)、可选 `mismatches`(每项 field/interface_value/document_value/resolution)。没有这一项，接口数据不能作主证据，审计会失败。
+- `fallbacks`（连接器缺数据时必填，其余可空）：每项写 `field`（受影响的字段或字段组）、`primary_connector`（原计划使用的连接器）、`fallback_source`（实际降级到的来源）、`reason`（枚举：no_market_coverage / no_field / not_authorized / user_declined / rate_limited / definition_mismatch）、`impact`（对报告结论的影响）。**降级不是静默替换**：有降级却不在 `fallbacks` 中声明，等于把二手源伪装成一手源，审计会失败。
 
 ## 来源 SOURCES
 

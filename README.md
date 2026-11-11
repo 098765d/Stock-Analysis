@@ -84,14 +84,18 @@ git clone https://github.com/098765d/Stock-Analysis.git institutional-equity-dee
 ### 6. 四条硬规矩
 
 1. **接口优先，但必须锚定核对**：结构化接口能取到的不必逐份下载原文；同时至少比对一份原文，否则接口数据不算核实。
-2. **全期覆盖**：五年年度和当年各期都要在，不能只挑最新一期；接口取不到的那一期才写缺口与已查范围。
-3. **逐数可溯**：查不到就写「暂无公开数据 + 已查范围 + 原因」，绝不补 0、不外推。
-4. **同行对照**：模块四 4.1–4.7 每节都要有同行同期数据、中位数和位置，解读必须引用这组差异。
+2. **取不到就降级，不许停**：连接器缺字段或未授权时，按「其它接口 → 免费公开接口 → 原文定点 → 权威统计」继续取数，逐项留痕；不许填 0、不许用旧值兜底。
+3. **全期覆盖**：五年年度和当年各期都要在，不能只挑最新一期；接口取不到的那一期才写缺口与已查范围。
+4. **逐数可溯**：查不到就写「暂无公开数据 + 已查范围 + 原因」，绝不补 0、不外推。
+5. **同行对照**：模块四 4.1–4.7 每节都要有同行同期数据、中位数和位置，解读必须引用这组差异。
 
 ### 7. 常见问题
 
 **Q：必须装富途 / Wind 之类的连接器吗？**
-A：不必须。技能每次会动态清点当前助手有什么工具；没有就走公开披露与权威网页，免费源（Yahoo Finance、Stooq、交易所行情页）同样可以。它不写死任何一家数据商。
+A：不必须。技能每次会动态清点当前助手有什么工具；**取不到就自动降级，不会停下来**。降级有固定顺序：同环境的其它已连接接口 → 免费公开接口（Yahoo Finance、Stooq、交易所行情页）→ 法定原文定点取字段 → 具名权威公开统计。每一处降级都会在报告首屏和来源表标注「哪个连接器缺什么、降到哪个源、什么原因」，并写进账本 `fallbacks`；有降级却不声明，审计直接判失败。所以它既不写死任何一家数据商，也不允许把免费源伪装成一手来源。
+
+**Q：免费源能顶替连接器吗？**
+A：只能部分顶替。Yahoo Finance 这类免费接口通常能补收盘价、市值、PE/PB 和部分总量财务；**A 股的分布拆分、扣非净利、合同负债、研发资本化、股东明细基本取不到**，这些还得回到法定原文。而且免费源多为二手整理，可以支撑数据陈述，但不能单独支撑因果解释。
 
 **Q：为什么不再逐份下载年报逐个读？**
 A：因为冗余。五年年报加当年三份季报已经是七八份 PDF，一年分析十次就是几十份重复下载；且手工从 PDF 抄数更容易串期、混口径（累计 vs 单季、合并 vs 母公司）。结构化接口一次就能取到带期间标签的序列。技能现在的规则是：**接口能取的走接口，取不到或对不上才定向读原文那一页**。省时间，也少出错。
@@ -211,16 +215,19 @@ Run an institutional equity deep-dive on Nexchip 688249.SH
 
 > Automated checks prove internal consistency, **not** that the field mapping is right, the list is exhaustive, or the conclusions hold. The few anchor figures must be reviewed by a human.
 
-### 6. Four non-negotiables
+### 6. Five non-negotiables
 
 1. **API first, always anchored.** Anything a structured interface returns need not be re-downloaded as a PDF — but at least one filing must be reconciled against it, or the interface value is not verified.
-2. **All periods.** Five fiscal years and every current-year period must appear; only genuinely unavailable periods are listed as gaps with the search scope stated.
-3. **Every number traceable.** If it cannot be found, write "no public data" with the search scope and reason. Never substitute zero or an estimate.
-4. **Peer layer.** Every block 4.1–4.7 shows same-period peer values, a median and the target's position; the interpretation must cite the gap.
+2. **If it fails, fall back — never stop.** When a connector lacks the field or is not authorised, keep going down the chain: other connected tools → free public APIs → the original filing page → named authoritative statistics. Log every hop; never fill zero or reuse stale values.
+3. **All periods.** Five fiscal years and every current-year period must appear; only genuinely unavailable periods are listed as gaps with the search scope stated.
+4. **Every number traceable.** If it cannot be found, write "no public data" with the search scope and reason. Never substitute zero or an estimate.
+5. **Peer layer.** Every block 4.1–4.7 shows same-period peer values, a median and the target's position; the interpretation must cite the gap.
 
 ### 7. FAQ
 
-**Do I need Futu, Wind or any specific connector?** No. The skill inventories whatever the current agent has; with nothing connected it falls back to public filings and authoritative web sources. Free sources such as Yahoo Finance, Stooq or exchange quote pages work too. No vendor is hard-coded.
+**Do I need Futu, Wind or any specific connector?** No. The skill inventories whatever the current agent has, and **falls back automatically instead of stopping**. The chain is fixed: other connected tools → free public APIs (Yahoo Finance, Stooq, exchange quote pages) → the original filing page for that field → named authoritative statistics. Every hop is reported on the cover and in the source table — which connector lacked what, which source took over, and why — and recorded in the ledger's `fallbacks`. A silent fallback fails the audit.
+
+**Can free sources replace a connector?** Only partly. Yahoo Finance and similar APIs usually cover closing prices, market cap, PE/PB and some headline financials; they generally **do not** provide A-share segment splits, recurring-stripped profit, contract liabilities, capitalised R&D or shareholder detail. Those still require the filing. Free sources are also second-hand aggregation: fine for stating a number, not enough to carry a causal claim.
 
 **Why not download and read every annual report?** Because it is redundant. Five annual reports plus three current-year interims is seven or eight PDFs; run ten analyses and you re-download dozens of them. Copying numbers out of PDFs by hand also invites period mismatches (cumulative vs single quarter) and scope errors (consolidated vs parent). A structured interface returns the whole series with period labels in one call. The rule is now: **take it from the API, open the original page only where the API has no field or disagrees.**
 

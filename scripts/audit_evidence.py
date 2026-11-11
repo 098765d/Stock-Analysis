@@ -526,6 +526,17 @@ def audit(data, html=None, allow_test=False):
                         required_text(item, key, path)
                 if mismatches:
                     warnings.append("接口与原文存在 " + str(len(mismatches)) + " 处差异，须确认报告已采用原文值并说明调整。")
+            fallbacks = sequence(strategy.get("fallbacks", []), "coverage.source_strategy.fallbacks")
+            fallback_reasons = {"no_market_coverage", "no_field", "not_authorized", "user_declined", "rate_limited", "definition_mismatch"}
+            for index, raw in enumerate(fallbacks):
+                path = "coverage.source_strategy.fallbacks[" + str(index) + "]"
+                item = mapping(raw, path)
+                for key in ("field", "primary_connector", "fallback_source", "impact"):
+                    required_text(item, key, path)
+                if not _enum(item.get("reason"), fallback_reasons):
+                    fail(path + ".reason", "降级原因须为 " + "/".join(sorted(fallback_reasons)) + " 之一")
+            if fallbacks:
+                warnings.append("本次有 " + str(len(fallbacks)) + " 处连接器降级，须人工确认降级来源足以支撑对应结论，且报告已声明降级情况。")
         warnings.append("api_first 模式由接口主取数；机器不能验证接口字段映射真实正确，须人工复核锚定核对记录及触发读原文的字段。")
 
     inventory_raw = data.get("connector_inventory", [])
