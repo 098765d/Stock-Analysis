@@ -160,6 +160,34 @@ class CalcTests(unittest.TestCase):
         self.assertEqual(m['q50']['value'],25)
         self.assertEqual(m['percentile']['value'],37.5)
 
+    def test_peer_comparison_median_gap_and_percentile(self):
+        d = base()
+        def peer(pid, value, relevance='core'):
+            return {'id': pid, 'name': pid, 'code': pid, 'listing': 'TEST',
+                    'business_model': 'ODM', 'relevance': relevance,
+                    'core_business_weight': cell(80, 'percent'),
+                    'source_ids': ['quote_fixture'],
+                    'periods': [{'label': 'FY2025', 'start': '2025-01-01',
+                                 'end': '2025-12-31',
+                                 'metrics': {'gross_margin': cell(value, 'percent')}}]}
+        d['peers'] = [peer('a', 10), peer('b', 20), peer('c', 30), peer('ref', 99, 'reference')]
+        d['peer_comparison_specs'] = [{'section': '4.2', 'label': '毛利率',
+                                       'metric': 'gross_margin', 'period': 'FY2025',
+                                       'unit': 'percent', 'target': cell(25, 'percent')}]
+        out = cm.compute(d)['peer_comparisons'][0]
+        self.assertEqual(out['sample_size'], 3)
+        self.assertEqual(out['median']['value'], 20)
+        self.assertEqual(out['gap_to_median']['value'], 5)
+        self.assertAlmostEqual(out['target_percentile']['value'], 200/3)
+        self.assertEqual(out['status'], 'ok')
+
+    def test_production_audit_requires_peer_layer(self):
+        d = fixture_data(); d['schema_version'] = 3
+        result = audit(d)
+        self.assertFalse(result['ok'])
+        self.assertTrue(any('peers' in error for error in result['errors']), result)
+        self.assertTrue(audit(d, allow_test=True)['ok'])
+
     def test_full_evidence_fixture_integration_and_offline_template(self):
         d=fixture_data(); d['schema_version']=3
         self.assertTrue(audit(d, fixture_html(), allow_test=True)['ok'])

@@ -58,6 +58,22 @@ v2裸数和latest_quarter旧结构不兼容，不能把旧数据无证据搬过�
 
 选填peg_growth_cases是具名G CELL映射，percent单位，说明起止、正利润和可比口径。计算只检查正值，低基数/并表是否适用需人工核实；主G优先三年CAGR而不是最新季度暴涨。
 
+## 同行对照层（生产必填）
+
+`peers` 是独立必填数组，至少 3 家 `relevance:"core"` 进入中位数计算；权重不足或模式不同者标 `reference` 并写明原因，不参与中位数。每家：`id`、`name`、`code`、`listing`、`business_model`、`relevance`、`core_business_weight`(CELL percent，业务收入权重)、`source_ids`、`periods` 数组。每个 period 含 `label`(如FY2025/2026Q3)、`start`、`end`、`metrics`；metrics 键对应 `report-blueprint.md` 同行对照层逐节清单，值一律 CELL，金额单位currency/CNY，比率可用percent/ratio，同行币种与财年先折算对齐，原值另存元数据。所有同行来源必须真实 opened/read；缺指标用缺失CELL+原因，不能拿目标公司值或年度值填季度。
+
+```json
+"peers": [{"id":"peer_a","name":"...","code":"...","listing":"SZ","business_model":"ODM",
+  "relevance":"core","core_business_weight":CELL,
+  "source_ids":["..."],
+  "periods":[{"label":"FY2025","start":"2025-01-01","end":"2025-12-31",
+    "metrics":{"gross_margin":CELL,"roe":CELL,"net_margin":CELL}}]}]
+```
+
+`coverage.peer_comparison_sections` 必须覆盖 `4.1`–`4.7` 七节，逐项写 `section`、`status`(ok/not_disclosed/unavailable/not_applicable)、`reason`(非ok必填)、`peer_ids`(ok至少一家且必须在peers中)。`peer_comparison_specs` 用于计算：每项含 `section`、`label`、`metric`、`period`、`unit`、`target`(目标公司CELL)、可选 `peer_ids`；计算器据此输出目标值、同行有效值、样本数、中位数、均值、目标−中位数差、经验分位及来源链。
+
+生产模式 `audit_evidence.py` 拒绝缺少 peers、核心同行不足 3 家、或七节对照未声明的底稿；测试模式（--allow-test）为兼容既有合成夹具不强制，但不能把测试账本当生产研报交付。机器只检查结构与声明，同行是否真的可比、财年/币种是否对齐、解读是否引用同行数字，仍需人工核对。
+
 ## 宏观与历史
 
 macro us3m/us10y/cn10y均percent CELL、as_of与收益率定义。期限差只在两美债as_of相同输出；正差不能自动称陡峭化。
@@ -66,4 +82,4 @@ histories每条code、point_in_time、frequency、start/end和observations:[{dat
 
 ## 离线HTML验收
 
-audit_evidence检查资源链接与visible文本、五模块及总结/风险/看板/来源id、各模块interpretation文本、禁止边际毛利率及加总表述、免责声明。不执行浏览器JavaScript，不逐个读取SVG数据，也不验证解释正确性。版式模板有待填正文且无图，是示范资产，禁止直接当报告交付。
+audit_evidence检查资源链接与visible文本、五模块及总结/风险/看板/来源id、各模块interpretation文本、生产模式同行池与4.1–4.7对照覆盖、禁止边际毛利率及加总表述、免责声明。不执行浏览器JavaScript，不逐个读取SVG数据，也不验证解释正确性。版式模板有待填正文且无图，是示范资产，禁止直接当报告交付。

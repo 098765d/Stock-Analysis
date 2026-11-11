@@ -16,9 +16,10 @@ TEMPLATE = {
     'schema_version': 3, 'analysis_as_of': None,
     'entity': {'name': None, 'primary_code': None, 'target_fiscal_year': None,
                'fiscal_year_start': None, 'total_shares': None},
-    'coverage': {'annual_periods': [], 'interim_report_ids': [],
+    'coverage': {'annual_periods': [], 'interim_report_ids': [], 'peer_comparison_sections': [],
                  'searched_at': None, 'searched_channels': [], 'no_interims_reason': None},
     'sources': [], 'connector_inventory': [], 'records': [], 'financials': {},
+    'peers': [], 'peer_comparison_specs': [],
     'markets': [], 'histories': [], 'macro': {}, 'ttm': {},
     '_instructions': 'Read references/input-schema.md. Never replace missing values with 0. '
                      'Schema v2 is incompatible. Tests are synthetic and prohibited in reports.'
@@ -297,6 +298,55 @@ def history_metrics(history, as_of):
     return result
 
 
+def compare_peers(data, cutoff):
+    """Compare target metrics with same-period, same-unit core peers. No data fetching."""
+    peers = data.get('peers', []) or []
+    by_id = {p.get('id'): p for p in peers}
+    out = []
+    for spec in data.get('peer_comparison_specs', []) or []:
+        section, label, metric = spec.get('section'), spec.get('label'), spec.get('metric')
+        period, unit = spec.get('period'), spec.get('unit', 'percent')
+        tc = spec.get('target')
+        target = val(tc, unit, 'CNY') if (tc and unit == 'currency') else (val(tc, unit) if tc else None)
+        ids = spec.get('peer_ids') or [p.get('id') for p in peers]
+        samples, cells = [], [tc]
+        for pid in ids:
+            peer = by_id.get(pid)
+            if not peer or peer.get('relevance') == 'reference':
+                continue
+            for per in peer.get('periods', []) or []:
+                if per.get('label') != period:
+                    continue
+                if parse_date(per['end']) > cutoff:
+                    raise ValueError('Peer period beyond analysis date: ' + str(pid))
+                c = (per.get('metrics', {}) or {}).get(metric)
+                cells.append(c)
+                v = val(c, unit, 'CNY') if (c and unit == 'currency') else (val(c, unit) if c else None)
+                if v is not None:
+                    samples.append({'peer_id': pid, 'value': v, 'source_ids': refs([c])})
+                break
+        vals = [s['value'] for s in samples]
+        n = len(vals)
+        med = quantile(vals, .5) if vals else None
+        mean = sum(vals)/n if n else None
+        gap = target-med if target is not None and med is not None else None
+        percentile = ((sum(v < target for v in vals) + .5*sum(v == target for v in vals))/n*100
+                      if target is not None and n else None)
+        out.append({
+            'section': section, 'label': label, 'metric': metric, 'period': period, 'unit': unit,
+            'target': output(target, 'verified target input', [tc], unit),
+            'peer_values': samples, 'sample_size': n,
+            'median': output(med, 'linear median of valid core-peer values', cells, unit),
+            'mean': output(mean, 'arithmetic mean of valid core-peer values', cells, unit),
+            'gap_to_median': output(gap, 'target minus peer median', cells,
+                                    'pp' if unit == 'percent' else unit),
+            'target_percentile': output(percentile, '(count lower + 0.5*count equal)/N*100', cells, 'percent'),
+            'status': 'ok' if n >= 3 else ('partial' if n else 'not_calculable'),
+            'warning': 'Position only; peer median is not an industry benchmark. N<3: list values, do not assert a median conclusion.'
+        })
+    return out
+
+
 def compute(data):
     if data.get('schema_version') != 3:
         raise ValueError('Schema v3 required; migrate v2 bare values to sourced CELLs using input-schema.md')
@@ -382,6 +432,7 @@ def compute(data):
                                          '(US10Y-US3M)*100; same observation day', [u3c, u10c], 'bps', reason='Missing or unmatched observation dates')
     for h in data.get('histories', []):
         result['histories'].append(history_metrics(h, cutoff))
+    result['peer_comparisons'] = compare_peers(data, cutoff)
     return result
 
 

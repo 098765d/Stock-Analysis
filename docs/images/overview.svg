@@ -73,13 +73,15 @@
   </g>
 
   <g font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
-    <text x="36" y="316" font-size="14" font-weight="700" fill="#162b3d">三条不可绕过的规矩 · Three non-negotiables</text>
-    <rect x="36" y="328" width="356" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
-    <text x="52" y="353" font-size="13" fill="#162b3d">① 原文优先　Primary filings first</text>
-    <rect x="404" y="328" width="356" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
-    <text x="420" y="353" font-size="13" fill="#162b3d">② 全期覆盖　All current-year interims</text>
-    <rect x="772" y="328" width="400" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
-    <text x="788" y="353" font-size="13" fill="#162b3d">③ 逐数可溯　Every number traceable</text>
+    <text x="36" y="316" font-size="14" font-weight="700" fill="#162b3d">四条不可绕过的规矩 · Four non-negotiables</text>
+    <rect x="36" y="328" width="276" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="50" y="353" font-size="12" fill="#162b3d">① 原文优先 Primary filings</text>
+    <rect x="324" y="328" width="276" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="338" y="353" font-size="12" fill="#162b3d">② 全期覆盖 All interims</text>
+    <rect x="612" y="328" width="276" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
+    <text x="626" y="353" font-size="12" fill="#162b3d">③ 逐数可溯 Traceable</text>
+    <rect x="900" y="328" width="264" height="40" rx="7" fill="#eef5fa" stroke="#b9d3e6"/>
+    <text x="914" y="353" font-size="12" fill="#155c85">④ 同行对照 Peer layer</text>
     <text x="36" y="390" font-size="11" fill="#7b8998">示意图 · Schematic illustration · 仅供理解流程，不含真实行情或财务数据 · Not investment advice</text>
   </g>
 </svg>

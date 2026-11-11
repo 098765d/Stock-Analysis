@@ -535,6 +535,67 @@ def audit(data, html=None, allow_test=False):
             if item.get("status") == "ok" and _number(item.get("value")) and item["value"] <= 0:
                 fail(path + "." + key + ".value", "价格、汇率和市场股数必须大于零")
 
+    # 生产模式强制同行对照层；测试夹具保持宽松，避免影响既有合成回归。
+    if not allow_test:
+        peer_list = sequence(data.get("peers", []), "peers", True)
+        peer_ids = set()
+        core_count = 0
+        for index, raw in enumerate(peer_list):
+            path = "peers[" + str(index) + "]"
+            peer = mapping(raw, path)
+            for key in ("id", "name", "code", "listing", "business_model"):
+                required_text(peer, key, path)
+            peer_id = peer.get("id")
+            if _text(peer_id):
+                if peer_id in peer_ids:
+                    fail(path + ".id", "同行 id 重复")
+                peer_ids.add(peer_id)
+            if not _enum(peer.get("relevance"), {"core", "reference"}):
+                fail(path + ".relevance", "必须为 core/reference")
+            if peer.get("relevance") == "core":
+                core_count += 1
+            references(peer.get("source_ids"), path + ".source_ids", True)
+            cell(peer.get("core_business_weight"), path + ".core_business_weight", "percent")
+            periods = sequence(peer.get("periods"), path + ".periods", True)
+            for number, raw_period in enumerate(periods):
+                ppath = path + ".periods[" + str(number) + "]"
+                per = mapping(raw_period, ppath)
+                required_text(per, "label", ppath)
+                start = date(per.get("start"), ppath + ".start", as_of)
+                end = date(per.get("end"), ppath + ".end", as_of)
+                if start and end and start > end:
+                    fail(ppath, "start 晚于 end")
+                for key, item in mapping(per.get("metrics"), ppath + ".metrics").items():
+                    metric_cell = cell(item, ppath + ".metrics." + str(key))
+                    if metric_cell.get("unit") == "currency" and metric_cell.get("currency") != "CNY":
+                        fail(ppath + ".metrics." + str(key), "同行金额须先折算为 CNY")
+        if core_count < 3:
+            fail("peers", "核心可比同行至少 3 家，当前 " + str(core_count) + " 家")
+        required_sections = {"4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7"}
+        sections = sequence(coverage.get("peer_comparison_sections"), "coverage.peer_comparison_sections", True)
+        seen = set()
+        for index, raw in enumerate(sections):
+            path = "coverage.peer_comparison_sections[" + str(index) + "]"
+            item = mapping(raw, path)
+            name = item.get("section")
+            if not _text(name) or name not in required_sections:
+                fail(path + ".section", "必须为 4.1-4.7 之一")
+                continue
+            if name in seen:
+                fail(path + ".section", "章节重复")
+            seen.add(name)
+            if not _enum(item.get("status"), STATUSES - {"not_calculable"}):
+                fail(path + ".status", "状态不合法")
+            if item.get("status") != "ok":
+                required_text(item, "reason", path)
+            else:
+                for peer_id in sequence(item.get("peer_ids"), path + ".peer_ids", True):
+                    if not _text(peer_id) or peer_id not in peer_ids:
+                        fail(path + ".peer_ids", "引用了未定义的同行 id")
+        for missing in sorted(required_sections - seen):
+            fail("coverage.peer_comparison_sections", "缺少模块四同行对照章节 " + missing)
+        warnings.append("同行是否真的可比、财年/币种对齐与解读是否引用同行数字，机器无法判断，须人工复核。")
+
     # 扩展 CELL 同样受来源、日期和非有限数约束，避免新增字段绕过证据审计。
     def extra_cells(value, path):
         if isinstance(value, dict):

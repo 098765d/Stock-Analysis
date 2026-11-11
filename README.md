@@ -41,7 +41,7 @@
 - **模块一** 主营穿透：分业务收入、毛利、客户与供应商集中度
 - **模块二** 行业空间：中国 / 全球 TAM 与 CAGR，注明机构和口径
 - **模块三** 同行池：国内 + 海外可比公司、商业模式、市占率
-- **模块四** 七维诊断：一致预期、盈利质量、运营效率、债务、研发、分市场估值、筹码结构
+- **模块四** 七维诊断：一致预期、盈利质量、运营效率、债务、研发、分市场估值、筹码结构 —— **每节都列出至少 3 家核心同行的同期数据、同行中位数与目标公司分位，并在解读中引用**
 - **模块五** 利率锚：3M / 10Y 美债、中国 10Y 国债、期限利差
 - **末尾** 三条基于数字的结论、三条可被数字触发的风险、下一期跟踪看板、数据缺口清单
 
@@ -74,17 +74,18 @@ git clone https://github.com/098765d/Stock-Analysis.git institutional-equity-dee
 1. **定边界** — 核实公司、代码、所有上市地、财年与分析日。
 2. **读原文** — 打开并阅读五年年报 + 当年全部中期报告；同时清点当前助手已连接、且工具清单可读的数据连接器。
 3. **建账本** — 每个原值记为一条带来源、期间、单位、定位的记录；缺失分「未披露 / 未取到 / 不适用 / 不宜计算」。
-4. **算指标** — `scripts/calc_metrics.py` 做确定性计算：单季还原、TTM、周转天数、四单季三率、分市场估值、经验分位。
+4. **算指标** — `scripts/calc_metrics.py` 做确定性计算：单季还原、TTM、周转天数、四单季三率、分市场估值、经验分位，**以及同行中位数、目标−中位数差与经验分位**。
 5. **出报告** — `assets/report-skeleton.html` 是离线版式模板，用实采数据填表和图。
 6. **一轮检查** — `scripts/audit_evidence.py` 查证据结构、全期覆盖、离线资源；再由人核对原文与结论。
 
 > 机器检查只保证结构自洽，**不能证明真的读过原文、清单没有遗漏、结论一定正确**。这一步必须人工过一遍。
 
-### 6. 三条硬规矩
+### 6. 四条硬规矩
 
 1. **原文优先**：财报数字以法定披露为准，数据连接器只用来加速和交叉验证。
 2. **全期覆盖**：当年有一季报、中报、三季报就得三份都列，不能只挑最新一份。
 3. **逐数可溯**：查不到就写「暂无公开数据 + 已查范围 + 原因」，绝不补 0、不外推。
+4. **同行对照**：模块四 4.1–4.7 每节都要有同行同期数据、中位数和位置，解读必须引用这组差异。
 
 ### 7. 常见问题
 
@@ -99,6 +100,9 @@ A：先把 H 股价格按注明日期的汇率折成人民币、换成每基础�
 
 **Q：为什么报告里看不到「边际毛利率」？**
 A：这个指标在低基数、并表、一次性损益下会严重失真。改用最近四个完整单季的毛利率 / 营业利润率 / 净利率及环比，并显式检查合并范围。
+
+**Q：会和同行比吗？**
+A：会，是硬性要求。模块三锁定至少 3 家核心可比同行，模块四 4.1–4.7 每节都列同行同期指标、中位数和目标公司分位；解读要写「目标 A%、中位数 B%、差 ±C pp、第 D 分位」。混业集团整体毛利率不可直接横比，会改比同口径变化并说明原因。确实查不到就按状态标注已查范围，不整节跳过。
 
 **Q：能自己验证吗？**
 
@@ -163,7 +167,7 @@ One file: `{TICKER}_{NAME}_fundamental-deep-dive_YYYYMMDD.html`, covering:
 - **Module 1** Business mix: segment revenue, gross profit, customer / supplier concentration
 - **Module 2** Market size: China and global TAM / CAGR, with institution and definition
 - **Module 3** Peer set: domestic and overseas comparables, business models, market share
-- **Module 4** Seven diagnostic blocks: consensus, earnings quality, working capital, debt, R&D, per-market valuation, ownership
+- **Module 4** Seven diagnostic blocks: consensus, earnings quality, working capital, debt, R&D, per-market valuation, ownership — **each block also shows at least three core peers on the same period, the peer median and the target's percentile, and the interpretation must cite that gap**
 - **Module 5** Rate anchor: 3M / 10Y US Treasuries, China 10Y government bond, term spread
 - **At the end** Three number-backed conclusions, three trigger-based risks, a next-report watchlist and an explicit data-gap list
 
@@ -190,17 +194,18 @@ Run an institutional equity deep-dive on Nexchip 688249.SH
 1. **Scope** — verify entity, ticker, all listing venues, fiscal year and analysis date.
 2. **Read filings** — open five annual reports plus every current-year interim; in parallel, inventory the connectors that are actually connected and readable in this agent.
 3. **Build a ledger** — each raw value carries source, period, unit and locator; gaps are labelled *not disclosed / unavailable / not applicable / not calculable*.
-4. **Compute** — `scripts/calc_metrics.py` derives single quarters, TTM, turnover days, four-quarter margins, per-market multiples and empirical percentiles.
+4. **Compute** — `scripts/calc_metrics.py` derives single quarters, TTM, turnover days, four-quarter margins, per-market multiples, empirical percentiles, **plus peer medians, gaps and percentiles**.
 5. **Render** — `assets/report-skeleton.html` is an offline layout template filled with verified data.
 6. **Check once** — `scripts/audit_evidence.py` validates evidence structure, period coverage and offline assets; a human then re-checks the filings and conclusions.
 
 > Automated checks prove internal consistency, **not** that filings were truly read, the list is exhaustive, or the conclusions are right. Human review is still required.
 
-### 6. Three non-negotiables
+### 6. Four non-negotiables
 
 1. **Primary filings first.** Data connectors accelerate and cross-check; statutory filings decide.
 2. **All periods.** If Q1, H1 and Q3 are all published, all three appear — not just the newest.
 3. **Every number traceable.** If it cannot be found, write "no public data" with the search scope and reason. Never substitute zero or an estimate.
+4. **Peer layer.** Every block 4.1–4.7 shows same-period peer values, a median and the target's position; the interpretation must cite the gap.
 
 ### 7. FAQ
 
@@ -211,6 +216,8 @@ Run an institutional equity deep-dive on Nexchip 688249.SH
 **How does it treat A+H listings?** Convert the H price into CNY at a dated FX rate, normalise to one underlying share, then compare with the A price. PE / PB / PS use a consistent whole-company denominator for each market. Market caps are never added together.
 
 **Why is "incremental gross margin" missing?** It is badly distorted by low bases, consolidation changes and one-offs. The skill uses the last four complete quarters of gross / operating / net margin with QoQ changes, plus an explicit consolidation-scope check.
+
+**Does it compare peers?** Yes — it is mandatory. Module 3 locks in at least three core comparables; every block in Module 4 lists their same-period figures, the median and the target's percentile, and the interpretation must state "target A%, peer median B%, gap ±C pp, percentile D". Conglomerate-level margins are not compared blindly across different business mixes; gaps are labelled and explained or marked not comparable.
 
 **Can I verify it myself?** See the commands in the Chinese section above; maintenance tests use synthetic fixtures only.
 
