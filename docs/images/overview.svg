@@ -19,11 +19,11 @@
     <rect x="224" y="100" width="176" height="176" rx="12" fill="#ffffff" stroke="#d7e2ec"/>
     <circle cx="252" cy="128" r="15" fill="#155c85"/>
     <text x="252" y="133" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">2</text>
-    <text x="242" y="166" font-size="16" font-weight="700" fill="#162b3d">读财报原文</text>
-    <text x="242" y="189" font-size="11" fill="#5b6b7c">Read primary filings</text>
-    <text x="242" y="218" font-size="12" fill="#405568">五年年报 + 当年</text>
-    <text x="242" y="237" font-size="12" fill="#405568">全部已披露中期</text>
-    <text x="242" y="262" font-size="11" fill="#7b8998">Not summaries</text>
+    <text x="242" y="166" font-size="16" font-weight="700" fill="#162b3d">接口批量取数</text>
+    <text x="242" y="189" font-size="11" fill="#5b6b7c">API first, not PDF crawling</text>
+    <text x="242" y="218" font-size="12" fill="#405568">五年与当年各期</text>
+    <text x="242" y="237" font-size="12" fill="#405568">缺口才读原文</text>
+    <text x="242" y="262" font-size="11" fill="#7b8998">+ anchor check</text>
 
     <!-- step 3 -->
     <rect x="420" y="100" width="176" height="176" rx="12" fill="#ffffff" stroke="#d7e2ec"/>
@@ -74,10 +74,10 @@
 
   <g font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
     <text x="36" y="316" font-size="14" font-weight="700" fill="#162b3d">四条不可绕过的规矩 · Four non-negotiables</text>
-    <rect x="36" y="328" width="276" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
-    <text x="50" y="353" font-size="12" fill="#162b3d">① 原文优先 Primary filings</text>
+    <rect x="36" y="328" width="276" height="40" rx="7" fill="#eef8f2" stroke="#b8ddc9"/>
+    <text x="50" y="353" font-size="12" fill="#16805a">① 接口优先 + 锚定核对 API first</text>
     <rect x="324" y="328" width="276" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
-    <text x="338" y="353" font-size="12" fill="#162b3d">② 全期覆盖 All interims</text>
+    <text x="338" y="353" font-size="12" fill="#162b3d">② 全期覆盖 All periods</text>
     <rect x="612" y="328" width="276" height="40" rx="7" fill="#ffffff" stroke="#d7e2ec"/>
     <text x="626" y="353" font-size="12" fill="#162b3d">③ 逐数可溯 Traceable</text>
     <rect x="900" y="328" width="264" height="40" rx="7" fill="#eef5fa" stroke="#b9d3e6"/>

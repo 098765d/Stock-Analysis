@@ -214,6 +214,14 @@ def audit(data, html=None, allow_test=False):
         fail("schema_version", "必须为整数 3；旧版裸值 schema 不兼容，请迁移为来源 CELL")
     finite_tree(data, "input")
     as_of = date(data.get("analysis_as_of"), "analysis_as_of")
+    coverage_raw = data.get("coverage")
+    mode = "api_first"
+    if isinstance(coverage_raw, dict) and "evidence_mode" in coverage_raw:
+        candidate = coverage_raw.get("evidence_mode")
+        if candidate in {"api_first", "document_first"}:
+            mode = candidate
+        else:
+            fail("coverage.evidence_mode", "必须为 api_first 或 document_first")
     entity = mapping(data.get("entity"), "entity")
     for key in ("name", "primary_code"):
         required_text(entity, key, "entity")
@@ -309,9 +317,12 @@ def audit(data, html=None, allow_test=False):
             locator = item.get("locator", "")
             if not _text(locator) or locator.strip().lower() in {"unknown", "n/a", "todo", "待核实", "待补", "暂无", "来源"} or re.search(r"\{\{.*?\}\}", locator):
                 fail(path + ".locator", "非空数据必须提供明确 PDF 页码/表格/JSON 路径定位")
-            valid_kinds = {"statutory_report"} | ({"test_fixture"} if allow_test else set())
+            valid_kinds = {"statutory_report"} | ({"connector", "public"} if mode == "api_first" else set()) | ({"test_fixture"} if allow_test else set())
             if statutory and not any(_enum(source.get("kind"), valid_kinds) for source in refs):
-                fail(path, "核心财务非空值须引用 statutory_report 原文")
+                if mode == "api_first":
+                    fail(path, "核心财务非空值须引自法定原文，或 api_first 模式下经锚定核对的接口/公示来源")
+                else:
+                    fail(path, "核心财务非空值须引用 statutory_report 原文")
             if period_end:
                 for source in refs:
                     try:
@@ -388,7 +399,9 @@ def audit(data, html=None, allow_test=False):
     for year in missing:
         if year not in annuals:
             fail("coverage.missing_annual_reasons", "缺口财年必须在 annual_periods 检查范围内")
-    statutory_kinds = {"statutory_report"} | ({"test_fixture"} if allow_test else set())
+    statutory_kinds = {"statutory_report", "connector", "public"} if mode == "api_first" else {"statutory_report"}
+    if allow_test:
+        statutory_kinds = statutory_kinds | {"test_fixture"}
     disclosed_annuals = []
     for source in sources.values():
         if source.get("report_type") == "annual" and _enum(source.get("kind"), statutory_kinds) and source.get("opened") is True and source.get("read") is True:
@@ -428,12 +441,12 @@ def audit(data, html=None, allow_test=False):
             if "fiscal_year" in scope_obj and scope_obj["fiscal_year"] != year:
                 fail(scope_path + ".scope.fiscal_year", "检索范围财年必须匹配缺口财年")
             if "report_type" in scope_obj and scope_obj["report_type"] != "annual":
-                fail(scope_path + ".scope.report_type", "缺口检索必须核实 annual 原文")
+                fail(scope_path + ".scope.report_type", "缺口检索必须核实 annual 原始来源")
             if any(not _text(channel) for channel in scope):
                 fail(scope_path, "检索范围必须明确")
-            warnings.append(year + " 原文/记录缺口（须人工核实未公开结论）：" + reason["reason"])
+            warnings.append(year + " 年度来源/记录缺口（须人工核实未公开结论）：" + reason["reason"])
         else:
-            fail("coverage.annual_periods." + year, "缺少已读 annual 原文和对应 annual record；未公开须明确原因、检索时间与渠道")
+            fail("coverage.annual_periods." + year, "缺少已读 annual 来源和对应 annual record；未公开须明确原因、检索时间与渠道")
 
     interim_ids = sequence(coverage.get("interim_report_ids"), "coverage.interim_report_ids")
     references(interim_ids, "coverage.interim_report_ids")
@@ -463,12 +476,57 @@ def audit(data, html=None, allow_test=False):
         if not matching:
             fail("coverage.interim_report_ids", "来源无对应当年 record：" + source_id)
     if not interim_ids:
-        required_text(coverage, "no_interims_reason", "coverage")
-        if not searched or not channels:
-            fail("coverage", "当年无中报必须给出检索渠道、时间和 no_interims_reason")
-        warnings.append("当年无 interim 的声明须人工复核全部披露渠道。")
+        api_first_records = [
+            record for record in records
+            if record.get("fiscal_year") == entity.get("target_fiscal_year")
+            and _enum(record.get("kind"), {"ytd", "quarter"})
+        ]
+        if mode == "api_first" and api_first_records:
+            warnings.append("api_first 模式：当年期间数据由接口/公示来源取得，未逐份打开中期原文；口径与附注事项须人工复核，报告须声明该限制。")
+        else:
+            required_text(coverage, "no_interims_reason", "coverage")
+            if not searched or not channels:
+                fail("coverage", "当年无中报必须给出检索渠道、时间和 no_interims_reason")
+            warnings.append("当年无 interim 的声明须人工复核全部披露渠道。")
     if "latest_quarter" in data:
         warnings.append("latest_quarter 为旧格式，不计入任何 v3 覆盖检查。")
+
+    # 接口优先不等于零核对：api_first 模式必须留下至少一次对法定原文的锚定核对记录。
+    if mode == "api_first":
+        strategy = mapping(coverage.get("source_strategy"), "coverage.source_strategy") if "source_strategy" in coverage else {}
+        if not strategy:
+            fail("coverage.source_strategy", "api_first 模式必须声明 source_strategy（接口字段、原文触发项、锚定核对）")
+        else:
+            api_fields = sequence(strategy.get("api_fields"), "coverage.source_strategy.api_fields", True)
+            if any(not _text(item) for item in api_fields):
+                fail("coverage.source_strategy.api_fields", "必须逐项写明由接口/公示取得的字段")
+            document_fields = sequence(strategy.get("document_fields", []), "coverage.source_strategy.document_fields")
+            if any(not _text(item) for item in document_fields):
+                fail("coverage.source_strategy.document_fields", "必须逐项写明须读原文的字段；无则给空数组并说明理由")
+            anchor = mapping(strategy.get("anchor_check"), "coverage.source_strategy.anchor_check") if "anchor_check" in strategy else None
+            if anchor is None:
+                fail("coverage.source_strategy.anchor_check", "api_first 模式必须至少对一份法定原文做字段锚定核对（比接口值与原表原值）")
+            else:
+                if anchor.get("performed") is not True:
+                    fail("coverage.source_strategy.anchor_check.performed", "必须为 true；接口优先不允许零原文核对")
+                anchor_ids = sequence(anchor.get("source_ids"), "coverage.source_strategy.anchor_check.source_ids", True)
+                anchor_refs = references(anchor_ids, "coverage.source_strategy.anchor_check.source_ids", True)
+                anchor_kinds = {"statutory_report"} | ({"test_fixture"} if allow_test else set())
+                if not any(_enum(source.get("kind"), anchor_kinds) for source in anchor_refs):
+                    fail("coverage.source_strategy.anchor_check.source_ids", "锚定核对须引用法定报告来源，不能用接口自证")
+                verified = anchor.get("fields_verified")
+                if not isinstance(verified, int) or isinstance(verified, bool) or verified < 1:
+                    fail("coverage.source_strategy.anchor_check.fields_verified", "须为不小于 1 的整数，记录实际比对字段数")
+                required_text(anchor, "result", "coverage.source_strategy.anchor_check")
+                mismatches = sequence(anchor.get("mismatches", []), "coverage.source_strategy.anchor_check.mismatches")
+                for index, raw in enumerate(mismatches):
+                    path = "coverage.source_strategy.anchor_check.mismatches[" + str(index) + "]"
+                    item = mapping(raw, path)
+                    for key in ("field", "interface_value", "document_value", "resolution"):
+                        required_text(item, key, path)
+                if mismatches:
+                    warnings.append("接口与原文存在 " + str(len(mismatches)) + " 处差异，须确认报告已采用原文值并说明调整。")
+        warnings.append("api_first 模式由接口主取数；机器不能验证接口字段映射真实正确，须人工复核锚定核对记录及触发读原文的字段。")
 
     inventory_raw = data.get("connector_inventory", [])
     inventory = sequence(inventory_raw, "connector_inventory")

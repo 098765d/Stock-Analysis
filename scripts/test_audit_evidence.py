@@ -48,6 +48,17 @@ def fixture_record(source, kind):
     }
 
 
+def fixture_strategy(anchor_source_id="annual_2025"):
+    return {
+        "api_fields": ["五年营收/成本/营业利润/归母/扣非/OCF/资产/存货/应收/应付/合同负债", "各地收盘价与汇率"],
+        "document_fields": ["分部拆分"],
+        "anchor_check": {
+            "performed": True, "source_ids": [anchor_source_id], "fields_verified": 5,
+            "result": "test_fixture 合成核对：接口与原表五个核心科目一致", "mismatches": [],
+        },
+    }
+
+
 def fixture_data():
     data = {
         "schema_version": 3, "analysis_as_of": "2026-11-10",
@@ -65,6 +76,8 @@ def fixture_data():
         data["sources"].append(source)
         data["records"].append(fixture_record(source, "ytd"))
     data["sources"].append(fixture_source("quote_fixture", "FY2026", "2026-11-10", "2026-11-10", "2026-11-10", "announcement"))
+    data["coverage"]["evidence_mode"] = "api_first"
+    data["coverage"]["source_strategy"] = fixture_strategy()
     return data
 
 
@@ -196,7 +209,7 @@ class EvidenceAuditTests(unittest.TestCase):
     def test_missing_annual_source_and_record_fails(self):
         self.data["sources"] = [source for source in self.data["sources"] if source["id"] != "annual_2021"]
         self.data["records"] = [record for record in self.data["records"] if record["id"] != "record_annual_2021"]
-        self.assert_invalid("缺少已读 annual 原文")
+        self.assert_invalid("缺少已读 annual 来源")
 
     def test_verified_unpublished_annual_is_explicit_limitation(self):
         self.data["sources"] = [source for source in self.data["sources"] if source["id"] != "annual_2021"]
@@ -204,7 +217,7 @@ class EvidenceAuditTests(unittest.TestCase):
         self.data["coverage"]["missing_annual_reasons"] = {"FY2021": {"reason": "test_fixture 合成渠道核实该年度未公开", "searched_channels": ["test_fixture 年报存档范围"], "searched_at": "2026-11-10"}}
         result = audit(self.data, allow_test=True)
         self.assertTrue(result["ok"], result)
-        self.assertTrue(any("FY2021 原文/记录缺口" in warning for warning in result["warnings"]))
+        self.assertTrue(any("FY2021 年度来源/记录缺口" in warning for warning in result["warnings"]))
 
     def test_no_interims_requires_reason(self):
         self.data["sources"] = [source for source in self.data["sources"] if source["report_type"] != "interim"]
@@ -234,9 +247,61 @@ class EvidenceAuditTests(unittest.TestCase):
         self.assert_invalid("实际使用的 connector_inventory")
 
     def test_core_financial_cell_cannot_only_reference_connector(self):
+        self.data["coverage"]["evidence_mode"] = "document_first"
         self.data["records"][0]["metrics"]["rev"]["source_ids"] = ["quote_fixture"]
         self.data["sources"][-1]["kind"] = "public"
         self.assert_invalid("statutory_report 原文")
+
+    def test_api_first_allows_anchored_connector_core_metric(self):
+        self.data["coverage"]["source_strategy"] = fixture_strategy()
+        self.data["records"][0]["metrics"]["rev"]["source_ids"] = ["quote_fixture"]
+        self.data["sources"][-1]["kind"] = "public"
+        self.assertTrue(audit(self.data, allow_test=True)["ok"])
+
+    def test_api_first_requires_anchor_check(self):
+        del self.data["coverage"]["source_strategy"]["anchor_check"]
+        self.assert_invalid("锚定核对")
+
+    def test_api_first_rejects_unperformed_anchor(self):
+        self.data["coverage"]["source_strategy"]["anchor_check"]["performed"] = False
+        self.assert_invalid("performed")
+
+    def test_api_first_anchor_must_cite_statutory_report(self):
+        self.data["coverage"]["source_strategy"]["anchor_check"]["source_ids"] = ["quote_fixture"]
+        self.data["sources"][-1]["kind"] = "public"
+        self.assert_invalid("不能用接口自证")
+
+    def test_api_first_anchor_fields_verified_must_be_positive_integer(self):
+        for value in (0, True, "5", None):
+            with self.subTest(value=value):
+                self.data["coverage"]["source_strategy"] = fixture_strategy()
+                self.data["coverage"]["source_strategy"]["anchor_check"]["fields_verified"] = value
+                self.assert_invalid("fields_verified")
+
+    def test_api_first_mismatch_requires_resolution(self):
+        self.data["coverage"]["source_strategy"]["anchor_check"]["mismatches"] = [
+            {"field": "gross_profit", "interface_value": "100", "document_value": "98", "resolution": "采用原文值"}
+        ]
+        result = audit(self.data, allow_test=True)
+        self.assertTrue(result["ok"], result)
+        self.assertTrue(any("处差异" in item for item in result["warnings"]))
+        del self.data["coverage"]["source_strategy"]["anchor_check"]["mismatches"][0]["resolution"]
+        self.assert_invalid("resolution")
+
+    def test_api_first_requires_api_fields(self):
+        self.data["coverage"]["source_strategy"]["api_fields"] = []
+        self.assert_invalid("api_fields")
+
+    def test_document_first_mode_keeps_statutory_requirement(self):
+        self.data["coverage"]["evidence_mode"] = "document_first"
+        del self.data["coverage"]["source_strategy"]
+        self.data["records"][0]["metrics"]["rev"]["source_ids"] = ["quote_fixture"]
+        self.data["sources"][-1]["kind"] = "public"
+        self.assert_invalid("statutory_report 原文")
+
+    def test_unknown_evidence_mode_fails(self):
+        self.data["coverage"]["evidence_mode"] = "fast_mode"
+        self.assert_invalid("evidence_mode")
 
     def test_quote_requires_closed_price_and_dates(self):
         self.data["markets"][0]["price_state"] = "intraday"
@@ -309,7 +374,7 @@ class EvidenceAuditTests(unittest.TestCase):
 
     def test_annual_record_must_match_source_period(self):
         self.data["records"][0]["start"] = "2021-02-01"
-        self.assert_invalid("缺少已读 annual 原文")
+        self.assert_invalid("缺少已读 annual 来源")
 
     def test_nested_extra_cells_are_audited(self):
         self.data["entity"]["extra_fixture"] = fixture_cell("absent_fixture")

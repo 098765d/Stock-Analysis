@@ -29,7 +29,7 @@
     <rect x="936" y="96" width="228" height="104" rx="10" fill="#eef8f2" stroke="#b8ddc9"/>
     <text x="954" y="122" font-size="12" fill="#16805a">状态 STATUS</text>
     <text x="954" y="152" font-size="20" font-weight="700" fill="#16805a">ok · 已核对</text>
-    <text x="954" y="176" font-size="11" fill="#405568">原文已打开并阅读</text>
+    <text x="954" y="176" font-size="11" fill="#405568">接口值已锚定原文</text>
 
     <g fill="#16805a" font-size="22" font-weight="700">
       <text x="236" y="156">›</text><text x="476" y="156">›</text><text x="696" y="156">›</text><text x="916" y="156">›</text>
@@ -60,8 +60,8 @@
 
     <rect x="612" y="334" width="552" height="112" rx="10" fill="#f1f9f5" stroke="#c3e2d1"/>
     <text x="630" y="358" font-size="13" font-weight="700" fill="#16805a">本技能的做法 · This skill</text>
-    <text x="630" y="381" font-size="12" fill="#3f5b4c">查不到就写「暂无」并说明已查范围 · 五年年报 + 当年每份中期</text>
+    <text x="630" y="381" font-size="12" fill="#3f5b4c">查不到就写「暂无」并说明已查范围 · 接口取五年与当年各期</text>
     <text x="630" y="402" font-size="12" fill="#3f5b4c">分市场同权每基础股价格比较 · 内联 SVG，断网可看</text>
-    <text x="630" y="427" font-size="11" fill="#5b7a68">State the gap · all interims · per-share parity · offline SVG</text>
+    <text x="630" y="427" font-size="11" fill="#5b7a68">State the gap · API + anchor · per-share parity · offline SVG</text>
   </g>
 </svg>
